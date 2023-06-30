@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import h5py
 import os
+import string as st
 from paraview.simple import *
 from paraview.vtk import *
 from vtk import vtkXMLUnstructuredGridReader
@@ -35,22 +36,32 @@ Test7_150_outer_last_Stage
 
 '''
 
-
-def checkfname(data):
-    
-   
+def checkfname():
     flag = False
     while flag==False:
         try:
+            data = input("Enter the file you want to access: ")
             flag = True
-            if data.isdigit() or data.isspace():
+            if data.isnumeric() or data.isspace() or data in st.punctuation:
                 raise ValueError   
         except ValueError:
             data= input("Number out of range! Enter again: ")
             flag = False
     return data
-        
-   
+              
+def checkpath(src,filename):
+    Flag=False
+    while(Flag==False):
+        path1=src
+        # filename = checkfname(filename)
+        if not os.path.exists(path1):
+            print('File does not exist. Enter again')
+            filename=input("Enter the file you want to access: ")
+            Flag=False
+        else:
+            Flag= True
+    return filename
+              
 def checkinp(min,max,data):
     flag = False
     while flag==False:
@@ -63,10 +74,10 @@ def checkinp(min,max,data):
             flag = False
     return int(data)
    
-   
 def erfh5(fname):
-    FileName=fname+'.erfh5'
     src='E:/HdfViewTool/erfh5 files/'
+    fname= checkpath(src+fname+'.erfh5', fname)
+    FileName=fname+'.erfh5'
     fileName=src+ FileName
     f = h5py.File(fileName, 'r')
     a = list(f.keys())
@@ -127,7 +138,7 @@ def stl(fname):
     #change the directory accordingly
     src= 'E:\\HdfViewTool\\ddf&stampforming\\'+fname+'.stl'
     Dest='E:/HdfViewTool/stlcoords/'
-    
+    fname= checkpath(src,fname)
     # create a new 'STL Reader'
     stlfile = STLReader(registrationName=fname+'.stl', FileNames=[src])
 
@@ -173,19 +184,10 @@ def stl(fname):
 
                     ###################### paraview visualization ###############################
 
-Flag=False
-while(Flag==False):
-    fname= input("Enter the file you want to access: ")
-    fname= checkfname(fname)
-    path1='E:/HdfViewTool/erfh5 files/'+str(fname)+'.erfh5'
-    path2='E:/HdfViewTool/ddf&stampforming/'+str(fname)+'.stl'
-    if not (os.path.exists(path1) or os.path.exists(path2)):
-        print('File does not exist. Enter again')
-        Flag=False
-    else:
-        Flag= True
-       
 
+fname= checkfname()
+
+        
 
 choice= input("Press 1 for if you have erfh5 file\nPress 2 for if you have stl file\n")
 File=[]
